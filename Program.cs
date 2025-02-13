@@ -445,23 +445,59 @@ public static string LongestPalindrome(string s)
 }
 
 
-// 20 Group Anagrams
+// 20 Find the Median of Two Sorted Arrays
 
-public static List<List<string>> GroupAnagrams(string[] strs)
+public static double FindMedianSortedArrays(int[] nums1, int[] nums2)
 {
-    Dictionary<string, List<string>> anagramGroups = new Dictionary<string, List<string>>();
-
-    foreach (string str in strs)
+    if (nums1.Length > nums2.Length)
     {
-        char[] charArray = str.ToCharArray();
-        Array.Sort(charArray);
-        string sortedStr = new string(charArray);
-        if (!anagramGroups.ContainsKey(sortedStr))
-        {
-            anagramGroups[sortedStr] = new List<string>();
-        }
-        anagramGroups[sortedStr].Add(str);
+        return FindMedianSortedArrays(nums2, nums1);
     }
-    return new List<List<string>>(anagramGroups.Values);
+
+    int x = nums1.Length;
+    int y = nums2.Length;
+
+    int low = 0, high = x;
+    while (low <= high)
+    {
+        int partitionX = (low + high) / 2;
+        int partitionY = (x + y + 1) / 2 - partitionX;
+
+        int maxX = (partitionX == 0) ? int.MinValue : nums1[partitionX - 1];
+        int minX = (partitionX == x) ? int.MaxValue : nums1[partitionX];
+
+        int maxY = (partitionY == 0) ? int.MinValue : nums2[partitionY - 1];
+        int minY = (partitionY == y) ? int.MaxValue : nums2[partitionY];
+
+        if (maxX <= minY && maxY <= minX)
+        {
+            if ((x + y) % 2 == 0)
+            {
+                return (Math.Max(maxX, maxY) + Math.Min(minX, minY)) / 2.0;
+            }
+            else
+            {
+                return Math.Max(maxX, maxY);
+            }
+        }
+        else if (maxX > minY)
+        {
+            high = partitionX - 1;
+        }
+        else
+        {
+            low = partitionX + 1;
+        }
+    }
+
+    throw new InvalidOperationException("Input arrays are not sorted.");
+}
+
+public static void Main()
+{
+    int[] nums1 = { 1, 3 };
+    int[] nums2 = { 2 };
+    double median = FindMedianSortedArrays(nums1, nums2);
+    Console.WriteLine($"Median: {median}");
 }
 
